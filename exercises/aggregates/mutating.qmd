@@ -1,0 +1,108 @@
+# Mutating data
+
+One of the most common data analysis techniques is to look at change over time. The most common way of comparing change over time is through percent change. The math behind calculating percent change is very simple, and you should know it off the top of your head. The easy way to remember it is:
+
+`(new - old) / old`
+
+Or new minus old divided by old. Your new number minus the old number, the result of which is divided by the old number. To do that in R, we can use `dplyr` and `mutate` to calculate new metrics in a new field using existing fields of data.
+
+So first we'll import the tidyverse so we can read in our data and begin to work with it. Go ahead and do that:
+
+```{r}
+#| warning: false
+#| message: false
+library(tidyverse)
+```
+
+Now you'll need a common and simple dataset of total attendance at NCAA football games over the last few seasons.
+
+```{r}
+#| warning: false
+#| message: false
+#| results: asis
+#| echo: false
+library(downloadthis)
+library(glue)
+
+dllink <- download_link(
+  link = "https://dwillis.github.io/sports-data-files/attendance.csv",
+  button_label = "Download csv file",
+  button_type = "danger",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
+
+glue("<pre><p><strong>For this walkthrough:</strong></p><p>{dllink}</p></pre>")
+
+```
+
+You'll import it something like this.
+
+```{r}
+attendance <- read_csv('data/attendance.csv')
+```
+
+If you want to see the first six rows -- handy to take a peek at your data -- you can use the function `head`.
+
+```{r}
+head(attendance)
+```
+
+What's one thing you notice about the data that might make year-over-year comparisons more complex?
+
+**Answer** Some teams may have either moved to a new stadium or expanded their current stadium to increase the possible attendance, or swapped conferences and are listed twice.
+
+The code to calculate percent change is pretty simple. Remember, with `summarize`, we used `n()` to count things. With `mutate`, we use very similar syntax to calculate a new value using other values in our dataset. So in this case, we're trying to do (new-old)/old, but we're doing it with fields. If we look at what we got when we did `head`, you'll see there's \`2022\` as the new data, and we'll use \`2021\` as the old data. So we're looking at one year. Then, to help us, we'll use arrange again to sort it, so we get the fastest growing school over one year.
+
+```{r}
+attendance |> mutate(
+  change = (`2022` - `2021`)/`2021`
+) 
+```
+What do we see right away? Do those numbers look like we expect them to? No. They're a decimal expressed as a percentage. So let's fix that by multiplying by 100. 
+
+```{r}
+attendance |> mutate(
+  change = ((`2022` - `2021`)/`2021`)*100
+) 
+```
+Now, does this ordering do anything for us? No. Let's fix that with arrange. 
+
+```{r}
+attendance |> mutate(
+  change = ((`2022` - `2021`)/`2021`)*100
+) |> arrange(desc(change))
+```
+
+Who had the most growth in 2022 compared to the year before? What could account for that change? And what team(s) are the most interesting here?
+
+**Answer** FIU is listed at the top with growth, but taking them out of it because there is seemingly no way that FIU had zero fans, that would list Hawaii as the school with the most growth. That ended up being because they were playing at a different stadium in one of the year's, which in turn directly impacts their attendance growth. The most interesting teams here to me are Tulane and Kansas because I know they drastically improved their football programs in 2022 based on years prior, and so those schools are the first ones that stand out to me as potential pure football improvement reasons as to attendance growth, vs. other circumstances such as stadium change or COVID restrictions.
+
+## Back to women's soccer
+
+Let's turn back to the women's soccer match data from this season.
+
+Import it like this:
+
+```{r}
+matches_2023 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2023.csv")
+```
+
+Previously we calculated totals for shots attempted and shots on goal for each time. Now let's do shots on goal and goals, using group_by() and summarize(), and then we'll use mutate to add a percentage to that and see what stands out.
+
+```{r}
+matches_2023 |> 
+  group_by(team) |> 
+  summarise(
+    total_on_goal = sum(so_g),
+    total_goals = sum(goals)
+  ) |> 
+  mutate(percent = (total_goals/total_on_goal)*100) |> 
+  filter(team == "Maryland Terrapins, Terps" | team == "Ohio St. Buckeyes" | team == "Penn St. Nittany Lions" | team == "Michigan Wolverines" | team == "Michigan St. Spartans" | team == "Rutgers Scarlet Knights" | team == "Nebraska Huskers" | team == "Wisconsin Badgers" | team == "Northwestern Wildcats" | team == "Indiana Hoosiers" | team == "Minnesota Golden Gophers" | team == "Illinois Fighting Illini" | team == "Iowa Hawkeyes" | team == "Purdue Boilermakers")|>
+  arrange(desc(percent))
+```
+
+What stands out to you here? Describe that below. Would you narrow down the results to certain teams based on the data? If so, do that in the code and explain why you did it below. Finally, what's the most interesting result to you that could be a story?
+
+**Answer** It stands out to me the mix between "big" and "little" schools when it comes to the best teams in terms of turning their on-goal shots into actual goals. Among the top 10 schools, four — California, Oklahoma State, Arkansas and Florida State — come from power five conferences, while the other six come from smaller conferences. That tells me that it doesn't necessarily matter the level of competition these schools are facing, and that it's very reliant on the schools' actual talent. I then wanted to narrow down the results to only show Big Ten teams, and found out that Northwestern is the best at turning shots on goal into actual goals, while Maryland is the worst. The most interesting result that could be a story I think would be churning out the data for all of the conferences and determining which conference is the best at turning their on target shots into goals, and then seeing if that's just happen stance or if there's actually something specific that multiple schools are doing in the conference, or even if the level of play is a factor.
