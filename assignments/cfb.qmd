@@ -1,0 +1,81 @@
+```{r}
+library(tidyverse)
+library(cfbfastR)
+library(Hmisc)
+```
+
+```{r}
+plays_2023 <- cfbd_pbp_data(2023)
+```
+
+First-play problems: It seems like there's a lack of consistency about how teams define first plays, as some determine that as kickoffs, while others don't.
+
+```{r}
+plays_2023 |> filter(drive_number == 1, play_number == 1, play_type != 'Kickoff') |> distinct(home, play_type)
+```
+
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/footballlogs1122.csv")
+```
+
+```{r}
+logs <- logs |> mutate(
+  Differential = TeamScore - OpponentScore,
+  NetPenalties = DefPenalties - Penalties,
+  TurnoverMargin = DefTotalTurnovers - TotalTurnovers,
+  NetYards = OffensiveYards - DefYards,
+  NetPlays = OffensivePlays - DefPlays,
+  NetAvg = OffenseAvg - DefAvg,
+  NetRushingTD = RushingTD - DefRushingTD,
+  NetPassingTD = PassingTD - DefPassingTD,
+  NetRushingAtt = RushingAtt - DefRushingAtt,
+  NetPassingAtt = PassingAtt - DefPassingAtt
+)
+```
+
+```{r}
+fit <- lm(Differential ~ NetPenalties, data = logs)
+summary(fit)
+```
+
+The p-value of this regression is 0.0002839, meaning that the relationship between the net penalties and a team's aggregate point differential is statistically significant and the relationship is not random. Having said that, only 0.0006743 percent of a team's point differential can be explained due to the net penalties, which is extremely slim. Because of that, this regression is not useful.
+
+
+```{r}
+penalties <- lm(Differential ~ NetPenalties + TurnoverMargin + NetYards, data=logs)
+summary(penalties)
+```
+
+```{r}
+simplelogs <- logs |> select_if(is.numeric) |> select(-Game) |> select(Differential, NetPenalties, TurnoverMargin, NetYards, NetPlays, NetPassingTD, PassingPct, DefPassingPct, NetRushingTD, NetAvg, NetRushingAtt, NetPassingAtt) |>
+  filter (Differential >= -8 & Differential <= 8)
+```
+
+```{r}
+cormatrix <- rcorr(as.matrix(simplelogs))
+
+cormatrix$r
+```
+
+```{r}
+model2 <- lm(Differential ~ NetPenalties + TurnoverMargin + NetYards + NetRushingAtt + NetPassingAtt, data=logs)
+summary(model2)
+```
+
+My final multiple regression model features the net penalties, the turnover margin, the net total yards, the net rushing attempts and the net passing attempts to explain point differential. My first thought was to include the net penalties, the turnover margin and the net total yards, thinking those would be the major predictors. That gave a pretty good prediction percentage of about 80 percent, but the residual standard error was over 10, and I figured I could both narrow down the r-squared value closer to 100 percent and lower the residual standard error. So I then created a correlation matrix and figured out how correlated differential is to certain statistics, and with that, I settled on net penalties, the turnover margin, the net total yards, the net rushing attempts and the net passing attempts as my predictive measures. That gave me an adjusted r-squared value five percent higher than my original one at 85 percent, and a residual standard error value slightly lower at 8.7. This means that there is about an 85 percent chance, give or take some wiggle room, that if a team has less penalties than their opponent, wins the turnover margin, has more yards, and has both more rushing and passing attempts, they will win a game.
+
+```{r}
+model2 <- lm(Differential ~ NetPenalties + TurnoverMargin + NetYards + NetRushingAtt + NetPassingAtt, data=simplelogs)
+summary(model2)
+```
+
+```{r}
+fit <- lm(Differential ~ NetPenalties, data = simplelogs)
+summary(fit)
+```
+
+Filtering the data to only include "close" games — for me, that's differentials (results) including one-score games, AKA anything within eight points —, both my simple and multiple regression models are worse. For starters, I chose to define "close" games as any result being within one-score because that means a team can, at the worst, tie a game on its final possession. In regards to my simple regression model, the p-value shot up over 0.05, meaning that the relationship in "close" games between a team's differential and its net penalties is not statistically significant. For my multiple regression model, the p-value is still a very small number, meaning that the relationship in "close" games between a team's differential and the net penalties, the turnover margin, the net total yards, the net rushing attempts and the net passing attempts is statistically significant. However, the adjusted r-squared value dropped significantly from 85 percent to 33 percent, meaning that in "close" games, there is only about a 33 percent chance, give or take some wiggle room — less than with all games —, that if a team has less penalties than their opponent, wins the turnover margin, has more yards, and has both more rushing and passing attempts, they will win a game.
+
+## Summarization
+
+Throughout this exercise, I learned that by itself, there is no clear and/or strong relationship between penalties and point differential in both all and "close" games. Added with the turnover margin, the net total yards, the net rushing attempts and the net passing attempts, there is a relatively strong predictive relationship — about 85 percent — between those factors and a team's chances to win a game. But when those factors are limited to "close" games, that predictive percentage shrinks all the way down to 33 percent, meaning that those factors are not a good, complete indication of how teams win in "close" games. I think that there can be two potential stories made from this information: The factors that can let you predict 85 percent of the time that a team will win, but also how those factors carry much less value in "close" games. I think that there needs to be context added to the first potential story about how that isn't the case for "close" games, and I think that for the second potential story, that can dive in on what factors actually do matter in "close" games, and why the factors in all games have far less predictive potential in "close" games.
