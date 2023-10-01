@@ -1,1 +1,48 @@
+```{r}
+library (tidyverse)
+```
+
+```{r}
+logs <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensVolleyballData/main/data/ncaa_womens_volleyball_matchstats_2023.csv")
+```
+
+```{r}
+PerSet<- logs|>
+  mutate(
+    KillsPerSet = kills/s,
+    AcesPerSet = aces/s,
+    ErrorsPerSet = errors/s
+  ) |>
+  select(team, KillsPerSet, AcesPerSet, ErrorsPerSet)
+```
+
+```{r}
+VBteamTotals <- PerSet |> 
+  group_by(team) |> 
+  summarise(
+    KillsPerSetAvg = mean(KillsPerSet), 
+    AcesPerSetAvg = mean(AcesPerSet), 
+    ErrorsPerSetAvg = mean(ErrorsPerSet)
+    ) 
+```
+
+```{r}
+volleyballzscore <- VBteamTotals |>
+  mutate(
+    killszscore = as.numeric(scale(KillsPerSetAvg, center = TRUE, scale = TRUE)),
+    aceszscore = as.numeric(scale(AcesPerSetAvg, center = TRUE, scale = TRUE)),
+    digszscore = as.numeric(scale(ErrorsPerSetAvg, center = TRUE, scale = TRUE)),
+    TotalZscore = killszscore + aceszscore + digszscore
+  )
+```
+
+
+```{r}
+volleyballzscore |> arrange(desc(TotalZscore))
+```
+
+Using a team's average kills per set, aces per set, and errors per set, the top-three highest performing teams in the NCAA according to z-score are Hofstra, Pacific, and San Jose St. Maryland ranks 178th out of 333 schools. The two teams most similar to Maryland are Florida State and Georgetown, interestingly enough, both major schools in the scope of college athletics.
+
+I think the best story idea here would be that each of the six-best schools are mid majors. This may be partly due to the fact that the competition those teams are facing is inherently worse than the major schools, such as other teams in the top ten like Miami and Indiana, but still, it's interesting that by simply taking into a team's average kills, aces and errors per set, the mid majors dominate.
+
 
