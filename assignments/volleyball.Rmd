@@ -31,14 +31,14 @@ volleyballzscore <- VBteamTotals |>
   mutate(
     killszscore = as.numeric(scale(KillsPerSetAvg, center = TRUE, scale = TRUE)),
     aceszscore = as.numeric(scale(AcesPerSetAvg, center = TRUE, scale = TRUE)),
-    digszscore = as.numeric(scale(ErrorsPerSetAvg, center = TRUE, scale = TRUE)),
-    TotalZscore = killszscore + aceszscore + digszscore
+    errorszscore = as.numeric(scale(ErrorsPerSetAvg, center = TRUE, scale = TRUE)) *-1,
+    TotalZscore = killszscore + aceszscore + errorszscore
   )
 ```
 
 
 ```{r}
-volleyballzscore |> arrange(desc(TotalZscore))
+volleyballzscore |> select(team, TotalZscore, killszscore, aceszscore, errorszscore) |> arrange(desc(TotalZscore))
 ```
 
 Using a team's average kills per set, aces per set, and errors per set, the top-three highest performing teams in the NCAA according to z-score are Hofstra, Pacific, and San Jose St. Maryland ranks 178th out of 333 schools. The two teams most similar to Maryland are Florida State and Georgetown, interestingly enough, both major schools in the scope of college athletics.
@@ -46,3 +46,12 @@ Using a team's average kills per set, aces per set, and errors per set, the top-
 I think the best story idea here would be that each of the six-best schools are mid majors. This may be partly due to the fact that the competition those teams are facing is inherently worse than the major schools, such as other teams in the top ten like Miami and Indiana, but still, it's interesting that by simply taking into a team's average kills, aces and errors per set, the mid majors dominate.
 
 
+The top-two schools in the latest NCAA Division I volleyball's top 25 poll call the Big Ten conference their home. Yet its the Southeastern Conference that collects some of the best teams in the nation.
+
+Taking into account a teams' kills per set, aces per set, and errors per set, Tennessee, Arkansas, and Alabama sit well above the average of the rest of collegiate volleyball, three of the top seven teams in fact — a few spots ahead of No. 1 Wisconsin. 
+
+For Tennessee and Arkansas, that isn't as much of a surprise as one would think. The Volunteers and the Razorbacks sit No. 12 and No. 13 in the top 25, respectively, and have both gotten off to perfect starts through conference play. Each schools' 13 wins matches that of Wisconsin. 
+
+The shock comes in the form of the Crimson Tide. They got off to a blazing 10-1 start but have since taken a nose dive in conference play, losing their first three matches. Still, they fair better than the Badgers when taking into account the schools' kills, aces, and errors per set. The big reason why is that Alabama is a big-time aces group. It clears Wisconsin in that category. The same thing goes for Tennessee and Arkansas. What sets those schools apart from Wisconsin is their lack of errors per set, something that Wisconsin isn't the best in.
+
+Wisconsin headlines a Big Ten conference that is seen around the country as one of the premiere volleyball conferences. But maybe the SEC needs to get into that conversation as well.
