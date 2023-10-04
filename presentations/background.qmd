@@ -1,0 +1,115 @@
+```{r}
+library (tidyverse)
+library(readxl)
+```
+
+The question I picked for my presentation is: What college has produced the best quarterbacks since 2010, a.k.a can be currently defined as "QBU"?
+
+```{r}
+logs2023 <- read_excel("2023 passing stats.xlsx")
+logs2022  <- read_excel("2022 passing stats.xlsx")
+logs2021  <- read_excel("2021 passing stats.xlsx")
+logs2020  <- read_excel("2020 passing stats.xlsx")
+logs2019  <- read_excel("2019 passing stats.xlsx")
+logs2018  <- read_excel("2018 passing stats.xlsx")
+logs2017  <- read_excel("2017 passing stats.xlsx")
+logs2016  <- read_excel("2016 passing stats.xlsx")
+logs2015  <- read_excel("2015 passing stats.xlsx")
+logs2014  <- read_excel("2014 passing stats.xlsx")
+logs2013  <- read_excel("2013 passing stats.xlsx")
+logs2012  <- read_excel("2012 passing stats.xlsx")
+logs2011  <- read_excel("2011 passing stats.xlsx")
+logs2010  <- read_excel("2010 passing stats.xlsx")
+```
+
+```{r}
+stats2010 <- logs2010 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2011 <- logs2011 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2012 <- logs2012 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2013 <- logs2013 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2014 <- logs2014 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2015 <- logs2015 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2016 <- logs2016 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2017 <- logs2017 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2018 <- logs2018 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2019 <- logs2019 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2020 <- logs2020 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2021 <- logs2021 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2022 <- logs2022 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+```{r}
+stats2023 <- logs2023 |>
+  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  na.omit()
+```
+
+I went to Pro Football Reference and downloaded data on passing stats for every NFL season since 2010. I then looked at the excel file and took out any player that registered at least one pass that was not a quarterback. After that, I read in those files in R Studio and created data frames, called logs(whatever year) using that data. I then created more specific data frames inside those, called stats(whatever year), trimming the data to only include the players' names, the amount of games they played, their completion percentage, their passing yards, their touchdown total, their touchdown percentage, their interception total, their interception percentage, their passing success rate, their yards-per-attempt, their air yards-per-attempt, their yards-per-game, their passer rating, and their quarterback rating. Basically any counting stat on Pro Football Reference that I feel could be important.
+
+The big area of data that Pro Football Reference didn't include was EPA, a stat that may very well be one of the biggest factors in determining the best quarterbacks. There is a website with that information, but I would have to add it separability to the excel document as Pro Football Reference did not include it.
+
+So I have most of the data I need from each quarterback with at least one throw since 2010. What I still need to do/figure out how to do is find the best way to turn the year data frames into one data frame that shows simple non-counting stats (such as EPA, yards-per-attempt, touchdown percentage, etc.) of the players' careers. I also need to see if there's an easy way to add their colleges into that, or else I'll have to simply look up each college they attended. Once I complete that step, I then need to determine which stat I want to focus on, and compile that total for each college.
+
+After doing research, I found that there are a multitude of articles out their diving in on the "QBU" phenomena, but what I realized was that seemingly every one of those articles didn't use one set statistic to drive their decision. It was combinations of awards, draft position, multiple stats, and pure opinion. In my opinion, this presentation would be different as it would use a set scope of data.
