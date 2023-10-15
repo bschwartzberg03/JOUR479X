@@ -24,92 +24,198 @@ logs2010  <- read_excel("2010 passing stats.xlsx")
 
 ```{r}
 stats2010 <- logs2010 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G, Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2010filter <-stats2010 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2011 <- logs2011 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G, Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+ stats2011filter <-stats2011 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2012 <- logs2012 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2012filter <-stats2012 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2013 <- logs2013 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2013filter <-stats2013 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2014 <- logs2014 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2014filter <-stats2014 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2015 <- logs2015 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2015filter <-stats2015 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2016 <- logs2016 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2016filter <-stats2016 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2017 <- logs2017 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2017filter <-stats2017 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2018 <- logs2018 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2018filter <-stats2018 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2019 <- logs2019 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2019filter <-stats2019 |> filter(Pos == "QB")
+```
+
 
 ```{r}
 stats2020 <- logs2020 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2020filter <- stats2020 |> filter(Pos == "QB"| Pos == "WR/QB")
+```
+
 
 ```{r}
 stats2021 <- logs2021 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
+
+```{r}
+stats2021filter <-stats2021 |> filter(Pos == "QB")
+
+```
+
 
 ```{r}
 stats2022 <- logs2022 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
 
 ```{r}
+stats2022filter <-stats2022 |> filter(Pos == "QB"| Pos == "TE")
+```
+
+
+```{r}
 stats2023 <- logs2023 |>
-  select(Player, G, `Cmp%`, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, `TD%`, Int, `Int%`, `Succ%`, `Y/A`, `AY/A`, `Y/G`, Rate, QBR) |>
   na.omit()
 ```
 
-I went to Pro Football Reference and downloaded data on passing stats for every NFL season since 2010. I then looked at the excel file and took out any player that registered at least one pass that was not a quarterback. After that, I read in those files in R Studio and created data frames, called logs(whatever year) using that data. I then created more specific data frames inside those, called stats(whatever year), trimming the data to only include the players' names, the amount of games they played, their completion percentage, their passing yards, their touchdown total, their touchdown percentage, their interception total, their interception percentage, their passing success rate, their yards-per-attempt, their air yards-per-attempt, their yards-per-game, their passer rating, and their quarterback rating. Basically any counting stat on Pro Football Reference that I feel could be important.
+```{r}
+stats2023filter <-stats2023 |> filter(Pos == "QB")
+```
+
+
+I went to Pro Football Reference and downloaded data on passing stats for every NFL season since 2010. I then read in those files in R Studio and created data frames, called logs(whatever year) using that data. I then created more specific data frames inside those, called stats(whatever year), trimming the data to only include the players' names, their position, the amount of games they played, their completions, their attempts, their passing yards, their touchdown total, their touchdown percentage, their interception total, their interception percentage, their passing success rate, their yards-per-attempt, their air yards-per-attempt, their yards-per-game, their passer rating, and their quarterback rating. Basically any counting stat on Pro Football Reference that I feel could be important. I then filtered the data to only include quarterbacks.
 
 The big area of data that Pro Football Reference didn't include was EPA, a stat that may very well be one of the biggest factors in determining the best quarterbacks. There is a website with that information, but I would have to add it separability to the excel document as Pro Football Reference did not include it.
 
 So I have most of the data I need from each quarterback with at least one throw since 2010. What I still need to do/figure out how to do is find the best way to turn the year data frames into one data frame that shows simple non-counting stats (such as EPA, yards-per-attempt, touchdown percentage, etc.) of the players' careers. I also need to see if there's an easy way to add their colleges into that, or else I'll have to simply look up each college they attended. Once I complete that step, I then need to determine which stat I want to focus on, and compile that total for each college.
 
 After doing research, I found that there are a multitude of articles out their diving in on the "QBU" phenomena, but what I realized was that seemingly every one of those articles didn't use one set statistic to drive their decision. It was combinations of awards, draft position, multiple stats, and pure opinion. In my opinion, this presentation would be different as it would use a set scope of data.
+
+```{r}
+QBstats <- bind_rows(stats2010filter, stats2011filter, stats2012filter, stats2013filter, stats2014filter, stats2015filter, stats2016filter, stats2017filter, stats2018filter, stats2019filter, stats2020filter, stats2021filter, stats2022filter, stats2023filter)
+```
+
+```{r}
+QBtotalstats <- QBstats |>
+  group_by(Player) |>
+  summarise(
+    TotalYards = sum(Yds),
+    TotalTouchdowns = sum(TD),
+    TotalInterceptions = sum(Int),
+    TotalCompletions = sum(Cmp),
+    TotalAtt = sum(Att)
+  )
+```
+
+I created a dataframe called "QBtotalstats" that displays a quarterback's total yards, total touchdowns, total interceptions, total completions, and total attempts between 2010-2023. I did so after combining every filtered stats data frame into one singular Qb stats dataframe. One problem with the dataframe is that there are still repeats of certain players because Pro Football Reference — the site I gathered the data from — likes to add notations for players that go to the Pro Bowl or are named to the first team All-Pro team. The result is those players are treated differently by r because the exact same isn't the same.
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=QBtotalstats, 
+    aes(
+      x=reorder(Player, TotalTouchdowns), weight = TotalTouchdowns)
+  ) +
+  labs(
+    title="Pro Bowl Drew Brees is best QB in recent memory", 
+    x="Name", 
+    y="Total Touchdowns since 2010"
+  ) + 
+  theme_minimal() + 
+  coord_flip()
+```
+I created a bar chart that shows each quarterback's total touchdowns since 2010. The problem is, beyond there still being duplicates of players due to Pro Football Reference, there are so many quarterbacks that the bar chart is impossible to read.
