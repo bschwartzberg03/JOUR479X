@@ -1,6 +1,7 @@
 ```{r}
 library (tidyverse)
 library(readxl)
+library(nflreadr)
 ```
 
 The question I picked for my presentation is: What college has produced the best quarterbacks since 2010, a.k.a can be currently defined as "QBU"?
@@ -193,6 +194,7 @@ QBstats <- bind_rows(stats2010filter, stats2011filter, stats2012filter, stats201
 QBtotalstats <- QBstats |>
   group_by(Player) |>
   summarise(
+    TotalGames = sum(G),
     TotalYards = sum(Yds),
     TotalTouchdowns = sum(TD),
     TotalInterceptions = sum(Int),
@@ -204,14 +206,32 @@ QBtotalstats <- QBstats |>
 I created a dataframe called "QBtotalstats" that displays a quarterback's total yards, total touchdowns, total interceptions, total completions, and total attempts between 2010-2023. I did so after combining every filtered stats data frame into one singular Qb stats dataframe. One problem with the dataframe is that there are still repeats of certain players because Pro Football Reference — the site I gathered the data from — likes to add notations for players that go to the Pro Bowl or are named to the first team All-Pro team. The result is those players are treated differently by r because the exact same isn't the same.
 
 ```{r}
+betterQBstats <- QBstats |> mutate(Player_cleaned = gsub("[^[:alnum:]_ ]", "", Player))
+```
+
+```{r}
+betterQBstatstotal <- betterQBstats |>
+  group_by(Player_cleaned) |>
+  summarise(
+    TotalGames = sum(G),
+    TotalYards = sum(Yds),
+    TotalTouchdowns = sum(TD),
+    TotalInterceptions = sum(Int),
+    TotalCompletions = sum(Cmp),
+    TotalAtt = sum(Att)
+  )
+```
+
+
+```{r}
 ggplot() + 
   geom_bar(
-    data=QBtotalstats, 
+    data=betterQBstatstotal, 
     aes(
-      x=reorder(Player, TotalTouchdowns), weight = TotalTouchdowns)
+      x=reorder(Player_cleaned, TotalTouchdowns), weight = TotalTouchdowns)
   ) +
   labs(
-    title="Pro Bowl Drew Brees is best QB in recent memory", 
+    title="Tom Brady and Aaron Rodgers clear their competition", 
     x="Name", 
     y="Total Touchdowns since 2010"
   ) + 
@@ -219,3 +239,103 @@ ggplot() +
   coord_flip()
 ```
 I created a bar chart that shows each quarterback's total touchdowns since 2010. The problem is, beyond there still being duplicates of players due to Pro Football Reference, there are so many quarterbacks that the bar chart is impossible to read.
+
+```{r}
+betterQBstatstotalavg <- betterQBstatstotal |> 
+  group_by(Player_cleaned) |> 
+  summarise(
+    ydsPG = TotalYards/TotalGames,
+    tdPG = TotalTouchdowns/TotalGames,
+    intPG = TotalInterceptions/TotalGames,
+    cmpPG = TotalCompletions/TotalGames,
+    attPG = TotalAtt/TotalGames
+  )
+```
+
+```{r}
+QBzscore <- betterQBstatstotal |> 
+  mutate(
+    ydszscore = as.numeric(scale(TotalYards, center = TRUE, scale = TRUE)),
+    tdZscore = as.numeric(scale(TotalTouchdowns, center = TRUE, scale = TRUE)),
+    intZscore = as.numeric(scale(TotalInterceptions, center = TRUE, scale = TRUE)) * -1,
+    TotalZscore = ydszscore + tdZscore + intZscore
+  )  
+```
+
+```{r}
+QBzscore |> arrange(desc(TotalZscore))
+```
+
+```{r}
+roster2010loaded <-load_rosters(2010) |> filter(position == "QB")
+```
+
+```{r}
+roster2011loaded <-load_rosters(2011) |> filter(position == "QB")
+```
+
+```{r}
+roster2012loaded <-load_rosters(2012) |> filter(position == "QB")
+```
+
+```{r}
+roster2013loaded <-load_rosters(2013) |> filter(position == "QB")
+```
+
+```{r}
+roster2014loaded <-load_rosters(2014) |> filter(position == "QB")
+```
+
+```{r}
+roster2015loaded <-load_rosters(2015) |> filter(position == "QB")
+```
+
+```{r}
+roster2016loaded <-load_rosters(2016) |> filter(position == "QB")
+```
+
+```{r}
+roster2017loaded <-load_rosters(2017) |> filter(position == "QB")
+```
+
+```{r}
+roster2018loaded <-load_rosters(2018) |> filter(position == "QB")
+```
+
+```{r}
+roster2019loaded <-load_rosters(2019) |> filter(position == "QB")
+```
+
+```{r}
+roster2020loaded <-load_rosters(2020) |> filter(position == "QB")
+```
+
+```{r}
+roster2021loaded <-load_rosters(2021) |> filter(position == "QB")
+```
+
+```{r}
+roster2022loaded <-load_rosters(2022) |> filter(position == "QB")
+```
+
+```{r}
+roster2023loaded <-load_rosters(2023) |> filter(position == "QB")
+```
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=QBzscore, 
+    aes(
+      x=reorder(Player_cleaned, TotalZscore), weight = TotalZscore)
+  ) +
+  labs(
+    title="Aaron Rodgers and Tom Brady clear their competition", 
+    x="Name", 
+    y="Total Z-Score since 2010"
+  ) + 
+  theme_minimal() + 
+  coord_flip()
+```
+
+By consolidating players' names to generate the correct totals for all quarterbacks since 2010 and creating one metric to determine their values with Total Z-score — taking into account touchdowns, yards and interceptions —, I created a new bar graph that shows the total z score of each quarterback since 2010. The next step is to find correlate the quarterbacks' z scores with their colleges, making a new data frame that has each colleges' total z score, and then creating a graphic off of that.
