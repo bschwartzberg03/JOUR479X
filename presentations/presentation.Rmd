@@ -1,0 +1,206 @@
+```{r}
+library (tidyverse)
+library(readxl)
+library(nflreadr)
+library(ggalt)
+```
+
+The question I picked for my presentation is: What college has produced the best quarterbacks since 2017, a.k.a can be currently defined as "QBU"?
+
+I thought at first I would look at QBU since 2010, but N/A's in the data with the players' listed colleges limited how far I could go back to 2017. That made me limit the rest of my data I looked at to only include from 2017 until 2023.
+
+```{r}
+logs2023 <- read_excel("2023 passing stats.xlsx")
+logs2022  <- read_excel("2022 passing stats.xlsx")
+logs2021  <- read_excel("2021 passing stats.xlsx")
+logs2020  <- read_excel("2020 passing stats.xlsx")
+logs2019  <- read_excel("2019 passing stats.xlsx")
+logs2018  <- read_excel("2018 passing stats.xlsx")
+logs2017  <- read_excel("2017 passing stats.xlsx")
+```
+
+I went to Pro Football Reference and downloaded data on passing stats for every NFL season since 2017. I then read in those files in R Studio and created data frames, called logs(whatever year) using that data. I then created more specific data frames inside those, called stats(whatever year), trimming the data to only include the players' names, their position, the amount of games they played, their completions, their attempts, their passing yards, their touchdown total and their interception total. Basically the most important counting stats in my opinion. I then filtered the data to only include quarterbacks.
+
+I originally thought I would need/look at a quarterback's touchdown percentage, interception percentage, passing success rate, yards-per-attempt, air yards-per-attempt, yards-per-game, passer rating and quarterback rating, so I originally included those statistics in my selected stats dataframe. But as I went along I only needed to look at the players' names, their position, the amount of games they played, their completions, their attempts, their passing yards, their touchdown total and their interception total.
+
+```{r}
+stats2017 <- logs2017 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+stats2018 <- logs2018 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+stats2019 <- logs2019 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+stats2020 <- logs2020 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+stats2021 <- logs2021 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+stats2022 <- logs2022 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+stats2023 <- logs2023 |>
+  select(Player, Pos, G,  Cmp, Att, Yds...12, TD, Int) |>
+  na.omit()
+
+stats2017filter <-stats2017 |> filter(Pos == "QB")
+stats2018filter <-stats2018 |> filter(Pos == "QB")
+stats2019filter <-stats2019 |> filter(Pos == "QB")
+stats2020filter <- stats2020 |> filter(Pos == "QB"| Pos == "WR/QB")
+stats2021filter <-stats2021 |> filter(Pos == "QB")
+stats2022filter <-stats2022 |> filter(Pos == "QB"| Pos == "TE")
+stats2023filter <-stats2023 |> filter(Pos == "QB")
+```
+
+I created a dataframe that combined the filtered year stats into one singular QB stats dataframe. I then used that to create a new and better dataframe that removed non-word characters from a dataframe, such as when Pro Football Reference added notations for players that went to the Pro Bowl or were named to the first team All-Pro team. After that I created a better QB stats dataframe that totaled each players' stats for each season into one row.
+
+```{r}
+QBstats <- bind_rows(stats2017filter, stats2018filter, stats2019filter, stats2020filter, stats2021filter, stats2022filter, stats2023filter)
+
+betterQBstats <- QBstats |> mutate(Player_cleaned = gsub("[^[:alnum:]_ ]", "", Player))
+
+betterQBstatstotal <- betterQBstats |>
+  group_by(Player_cleaned) |>
+  summarise(
+    TotalGames = sum(G),
+    TotalYards = sum(Yds),
+    TotalTouchdowns = sum(TD),
+    TotalInterceptions = sum(Int),
+    TotalCompletions = sum(Cmp),
+    TotalAtt = sum(Att)
+  )
+```
+
+I loaded rosters from 2017-2023 from nflreadr — minimal package for downloading data from nflverse repositories — to find each players' college. I then filtered by position to include only quarterbacks in the dataframe, and created new dataframes off that for each season with each player and their college.
+
+```{r}
+roster2017loaded <-load_rosters(2017) |> filter(position == "QB")
+roster2018loaded <-load_rosters(2018) |> filter(position == "QB")
+roster2019loaded <-load_rosters(2019) |> filter(position == "QB")
+roster2020loaded <-load_rosters(2020) |> filter(position == "QB")
+roster2021loaded <-load_rosters(2021) |> filter(position == "QB")
+roster2022loaded <-load_rosters(2022) |> filter(position == "QB")
+roster2023loaded <-load_rosters(2023) |> filter(position == "QB")
+
+select2017roster <- roster2017loaded |> select(full_name, college)
+select2018roster <- roster2018loaded |> select(full_name, college)
+select2019roster <- roster2019loaded |> select(full_name, college)
+select2020roster <- roster2020loaded |> select(full_name, college)
+select2021roster <- roster2021loaded |> select(full_name, college)
+select2022roster <- roster2022loaded |> select(full_name, college)
+select2023roster <- roster2023loaded |> select(full_name, college)
+```
+
+I created a dataframe that combined the dataframes consisting off a quarterback's name and college for each year into one singular QB roster dataframe. I then used the distinct function to combine each duplicate row — i.e. multiple Josh Allen's — into one singular row so there were no duplicates of players.
+
+After that I created a new dataframe off the better QB stats dataframe to rename the player column to match what my singular QB roster dataframe had listed, which allowed me to create a new dataframe that joined the stats and roster dataframes into one singular and finished QB roster dataframe.
+
+```{r}
+QBrosters <- bind_rows(select2017roster, select2018roster, select2019roster, select2020roster, select2021roster, select2022roster, select2023roster)
+
+QBrosters2 <- QBrosters |> distinct()
+
+totalQbstats <- betterQBstatstotal |> rename(full_name = Player_cleaned)
+
+QBrosters3 <- QBrosters2 |> left_join(totalQbstats, join_by ("full_name"))
+```
+
+I calculated each QB's total z-score off the finalized QB roster dataframe, taking into account their total yards, total touchdowns and total interceptions, and omitted any N/A's in the process, which took out quarterbacks that didn't accumulate any stats.
+
+I then arranged by the players' college.
+
+```{r}
+QBzscore <- QBrosters3 |> 
+  mutate(
+    ydszscore = as.numeric(scale(TotalYards, center = TRUE, scale = TRUE)),
+    tdZscore = as.numeric(scale(TotalTouchdowns, center = TRUE, scale = TRUE)),
+    intZscore = as.numeric(scale(TotalInterceptions, center = TRUE, scale = TRUE)) * -1,
+    TotalZscore = ydszscore + tdZscore + intZscore
+  )  
+
+QBzscore2 <- QBzscore |>
+  na.omit() 
+
+QBzscore2 |> arrange(college)
+```
+
+I created a college z-score dataframe that added up the QB's' z-scores for their respective colleges — i.e. all of the Alabama QB's into one Alabama row.
+
+```{r}
+Collegezscores <- QBzscore2 |>
+  group_by(college) |>
+  summarise(
+    TotalZscore = sum(TotalZscore)
+  )
+```
+
+I created a bar chart that demonstrated the top colleges in terms of quarterback production since 2017.
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=Collegezscores, 
+    aes(
+      x=reorder(college, TotalZscore), weight = TotalZscore)
+  ) +
+  labs(
+    title="California is the current QBU", 
+    x="College", 
+    y="Total Z-Score", 
+    subtitle="The NFL's best quarterbacks since 2017 have come from the University of California.", caption="Source: Pro Football Reference | By Brandon Schwartzberg"
+  ) + 
+  theme_minimal() + 
+  coord_flip()
+```
+
+I created a lollipop chart that demonstrated the top colleges in terms of quarterback production since 2017.
+
+```{r}
+ggplot() + 
+  geom_lollipop(
+    data=Collegezscores, 
+    aes(y=reorder(college, TotalZscore), x=TotalZscore), 
+    horizontal = TRUE
+    ) + theme_minimal() + 
+  labs(title = "California is the current QBU", y="College", x="Total Z-Score", subtitle="The NFL's best quarterbacks since 2017 have come from the University of California.", caption="Source: Pro Football Reference | By Brandon Schwartzberg")
+```
+
+I created a new college z-score dataframe that filtered the dataframe to include only the top 15 colleges to create a more clear bar and lollipop chart.
+
+```{r}
+Collegezscores2 <- Collegezscores |> filter(TotalZscore > 1.3)
+```
+
+I created a bar chart that demonstrated the top colleges in terms of quarterback production since 2017, using only the top 15 colleges.
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=Collegezscores2, 
+    aes(
+      x=reorder(college, TotalZscore), weight = TotalZscore)
+  ) +
+  labs(
+    title="California is the current QBU", 
+    x="College", 
+    y="Total Z-Score",
+    subtitle="The NFL's best quarterbacks since 2017 have come from the University of California.", caption="Source: Pro Football Reference | By Brandon Schwartzberg"
+  ) + 
+  theme_minimal() + 
+  coord_flip()
+```
+
+I created a lollipop chart that demonstrated the top colleges in terms of quarterback production since 2017, using only the top 15 colleges.
+
+```{r}
+ggplot() + 
+  geom_lollipop(
+    data=Collegezscores2, 
+    aes(y=reorder(college, TotalZscore), x=TotalZscore), 
+    horizontal = TRUE
+    ) + theme_minimal() + 
+  labs(title = "California is the current QBU", y="College", x="Total Z-Score", subtitle="The NFL's best quarterbacks since 2017 have come from the University of California.", caption="Source: Pro Football Reference | By Brandon Schwartzberg")
+```
