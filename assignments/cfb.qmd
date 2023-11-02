@@ -2,6 +2,8 @@
 library(tidyverse)
 library(cfbfastR)
 library(Hmisc)
+library(waffle)
+library(ggbump)
 ```
 
 ```{r}
@@ -79,3 +81,130 @@ Filtering the data to only include "close" games — for me, that's differential
 ## Summarization
 
 Throughout this exercise, I learned that by itself, there is no clear and/or strong relationship between penalties and point differential in both all and "close" games. Added with the turnover margin, the net total yards, the net rushing attempts and the net passing attempts, there is a relatively strong predictive relationship — about 85 percent — between those factors and a team's chances to win a game. But when those factors are limited to "close" games, that predictive percentage shrinks all the way down to 33 percent, meaning that those factors are not a good, complete indication of how teams win in "close" games. I think that there can be two potential stories made from this information: The factors that can let you predict 85 percent of the time that a team will win, but also how those factors carry much less value in "close" games. I think that there needs to be context added to the first potential story about how that isn't the case for "close" games, and I think that for the second potential story, that can dive in on what factors actually do matter in "close" games, and why the factors in all games have far less predictive potential in "close" games.
+
+
+```{r}
+md <- c("Rushing"=175, "Passing"=314)
+ms <- c("Rushing"=100, "Passing"=221)
+```
+
+```{r}
+waffle(
+        md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+)
+```
+
+```{r}
+passing <- c("Maryland"=314, "Michigan State"=221)
+```
+
+```{r}
+waffle(
+        passing, 
+        rows = 10, 
+        title="Maryland vs Michigan State: passing", 
+        xlab="1 square = 1 yard", 
+        colors = c("red", "green")
+)
+```
+
+```{r}
+iron(
+ waffle(md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "green")
+        )
+)
+```
+
+```{r}
+md <- c("Rushing"=175, "Passing"=314)
+ms <- c("Rushing"=100, "Passing"=221, 168)
+```
+
+
+```{r}
+iron(
+ waffle(md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 1 yard",
+        colors = c("black", "green", "white")
+        )
+)
+```
+
+```{r}
+iron(
+ waffle(md/2, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 2 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms/2, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 2 yard",
+        colors = c("black", "green", "white")
+        )
+)
+```
+
+## Bump Charts
+
+```{r}
+rankings <- read_csv("https://thescoop.org/sports-data-files/cfbranking22.csv")
+```
+
+```{r}
+ggplot() + 
+  geom_bump(
+    data=rankings, aes(x=Week, y=Rank, color=Team)) 
+```
+
+```{r}
+top10 <- rankings |> filter(Week == 15 & Rank <= 10)
+
+newrankings <- rankings |> filter(Team %in% top10$Team)
+```
+
+```{r}
+ggplot() + 
+  geom_bump(data=newrankings, aes(x=Week, y=Rank, color=Team)) + 
+  geom_point(data=newrankings, aes(x=Week, y=Rank, color=Team), size = 4) +   
+  geom_text(data = newrankings |> filter(Week == min(Week)), aes(x = Week - .2, y=Rank, label = Team), size = 3, hjust = 1) +
+  geom_text(data = newrankings |> filter(Week == max(Week)), aes(x = Week + .2, y=Rank, label = Team), size = 3, hjust = 0) +
+  labs(title="Last year's top ten was anything but boring", subtitle="", y= "Rank", x = "Week") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.grid.major = element_blank(),
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()
+    ) +
+  scale_color_manual(values = c("#9E1B32","#F56600", "#BA0C2F", "#0021A5", "#ffcb05", "#BB0000", "#4d1979","#FF8200", "#990000", "#CC0000")) +
+  scale_x_continuous(breaks=c(13,14,15,16,17)) + 
+  scale_y_reverse(breaks=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15))
+```
+
