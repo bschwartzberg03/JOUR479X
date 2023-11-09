@@ -1,0 +1,111 @@
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/logs22.csv")
+```
+
+```{r}
+umd <- logs |> filter(Team == "Maryland")
+```
+
+```{r}
+ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT))
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT)) + 
+  scale_y_continuous(limits = c(0, .6))
+```
+
+
+```{r}
+ill <- logs |> filter(Team == "Illinois")
+```
+
+```{r}
+ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red")
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange")
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  scale_y_continuous(limits = c(0, .70))
+```
+
+```{r}
+powerfive <- c("SEC", "Big Ten", "Pac-12", "Big 12", "ACC")
+
+p5conf <- logs |> filter(Conference %in% powerfive)
+```
+
+
+```{r}
+ggplot() + 
+  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  scale_y_continuous(limits = c(0, .65))
+```
+
+```{r}
+average <- logs |> group_by(Date) |> summarise(mean_shooting=mean(TeamFGPCT))
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  geom_line(data=average, aes(x=Date, y=mean_shooting), color="black") + 
+  scale_y_continuous(limits = c(0, .70))
+```
+
+## Early Season Analysis
+
+```{r}
+logs <- read_csv("https://raw.githubusercontent.com/dwillis/dwillis.github.io/main/docs/sports-data-files/cbblogs1524.csv")
+```
+
+```{r}
+md <- logs |> filter(
+  TeamFull == "Maryland Terrapins",
+  Game <6
+  )
+```
+
+```{r}
+md2 <- md |>
+  group_by(Game) |>
+  summarise(
+    FTpctavg = mean(TeamFTPCT)
+  )
+```
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=md2, 
+    aes(
+      x=reorder(Game, FTpctavg), 
+      weight=FTpctavg
+      )) + labs(
+    title="Is Maryland men's basketball inconsistent with free throws early on?", subtitle="The Terps' free throw has varied on average through the first five games of their season.", caption="Source: NCAA | By Brandon Schwartzberg",
+    x="Game Number", 
+    y="Average Free Throw Percentage"
+    ) + 
+  theme_minimal() + 
+  coord_flip()
+```
+
+Maryland men's basketball has been inconsistent with its free throws early in the season. The Terps' average free throw percentage has varied through the first five games of their season, with no consistency on a game-by-game basis. Their free throw percentage in their 2023 season opener of 68 percent is below their game 1 average, but that may not in actuality have any basis on their free throw percentages over their next four games as in past season's they haven't found consistency game in and game out early in their season.
