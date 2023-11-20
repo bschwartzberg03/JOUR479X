@@ -1,0 +1,114 @@
+```{r}
+library (tidyverse)
+```
+
+My second presentation focuses on the best bang-for-buck Division I college football coaches over the last two seasons.
+
+I used data from Sports Reference College Football to create csv files for each conference in 2022 and 2023. That data includes the teams' wins and losses (both total and conference), their points per game (both offense and defense), their simple rating, their strength of schedule, and their ranks in the AP preseason, AP final, and AP highest polls.
+
+```{r}
+ACC_2023 <- read_csv("ACC_2023.csv")
+American_2023 <- read_csv("American_2023.csv")
+Big10_2023 <- read_csv("Big 10_2023.csv")
+Big12_2023 <- read_csv("Big 12_2023.csv")
+ConferenceUSA_2023 <- read_csv("Conference USA_2023.csv")
+Independent_2023 <- read_csv("Independent_2023.csv")
+MAC_2023 <- read_csv("MAC_2023.csv")
+Mountain_West_2023 <- read_csv("Mountain West_2023.csv")
+Pac12_2023 <- read_csv("Pac 12_2023.csv")
+SEC_2023 <- read_csv("SEC_2023.csv")
+Sun_Belt_2023 <- read_csv("Sun Belt_2023.csv")
+
+ACC_2022 <- read_csv("ACC_2022.csv")
+American_2022 <- read_csv("American_2022.csv")
+Big10_2022 <- read_csv("Big 10_2022.csv")
+Big12_2022 <- read_csv("Big 12_2022.csv")
+ConferenceUSA_2022 <- read_csv("Conference USA_2022.csv")
+Independent_2022 <- read_csv("Independent_2022.csv")
+MAC_2022 <- read_csv("MAC_2022.csv")
+Mountain_West_2022 <- read_csv("Mountain West_2022.csv")
+Pac12_2022 <- read_csv("Pac 12_2022.csv")
+SEC_2022 <- read_csv("SEC_2022.csv")
+Sun_Belt_2022 <- read_csv("Sun Belt_2022.csv")
+```
+
+I cleaned up the data by deleting the first row for each of the dataframes since the first row was a subsection without any relevant data.
+
+```{r}
+ACC_clean_2023 <- ACC_2023[-1,]
+American_clean_2023 <- American_2023[-1,]
+Big_10_clean_2023 <- Big10_2023[-1,]
+Big_12_clean_2023 <- Big12_2023[-1,]
+Conference_USA_clean_2023 <- ConferenceUSA_2023[-1,]
+Independent_clean_2023 <- Independent_2023[-1,]
+MAC_clean_2023 <- MAC_2023[-1,]
+Mountain_West_clean_2023 <- Mountain_West_2023[-1,]
+Pac_12_clean_2023 <- Pac12_2023[-1,]
+SEC_clean_2023 <- SEC_2023[-1,]
+Sun_Belt_clean_2023 <- Sun_Belt_2023[-1,]
+
+ACC_clean_2022 <- ACC_2022[-1,]
+American_clean_2022 <- American_2022[-1,]
+Big_10_clean_2022 <- Big10_2022[-1,]
+Big_12_clean_2022 <- Big12_2022[-1,]
+Conference_USA_clean_2022 <- ConferenceUSA_2022[-1,]
+Independent_clean_2022 <- Independent_2022[-1,]
+MAC_clean_2022 <- MAC_2022[-1,]
+Mountain_West_clean_2022 <- Mountain_West_2022[-1,]
+Pac_12_clean_2022 <- Pac12_2022[-1,]
+SEC_clean_2022 <- SEC_2022[-1,]
+Sun_Belt_clean_2022 <- Sun_Belt_2022[-1,]
+```
+
+I combined the dataframes into two separate dataframes, one for 2023 and one for 2022, that holds every Division I team.
+
+```{r}
+College_teams_2023 <- bind_rows(ACC_clean_2023, American_clean_2023, Big_10_clean_2023, Big_12_clean_2023, Conference_USA_clean_2023, Independent_clean_2023, MAC_clean_2023, Mountain_West_clean_2023, Pac_12_clean_2023, SEC_clean_2023, Sun_Belt_clean_2023)
+
+College_teams_2022 <- bind_rows(ACC_clean_2022, American_clean_2022, Big_10_clean_2022, Big_12_clean_2022, Conference_USA_clean_2022, Independent_clean_2022, MAC_clean_2022, Mountain_West_clean_2022, Pac_12_clean_2022, SEC_clean_2022, Sun_Belt_clean_2022)
+```
+
+I created new dataframes for 2023 and 2022 to include only the teams' wins, losses and win percentage for both their overall games and conference games, since my focus is in terms of coaches' bang-for-buck (wins), and then I renamed the columns to clearly show what they are.
+
+```{r}
+College_teams_2023_wins <- College_teams_2023 |>
+  group_by(...1) |>
+  summarise(
+    Overall...2,
+    Overall...3,
+    Overall...4,
+    Conference...5,
+    Conference...6,
+    Conference...7
+  ) |>
+  rename(
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7
+  ) 
+
+College_teams_2022_wins <- College_teams_2022 |>
+  group_by(...1) |>
+  summarise(
+    Overall...2,
+    Overall...3,
+    Overall...4,
+    Conference...5,
+    Conference...6,
+    Conference...7
+  ) |>
+  rename(
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7
+  ) 
+```
+
+
+The next step for me, is where I could use some assistance, is getting coaching salary data into r. There's clear data that exists for 2022 and 2023 on on3's website, but I don't know how to get that data into r. I'm not sure if I would need to scrape it.
