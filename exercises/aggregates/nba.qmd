@@ -1,0 +1,21 @@
+```{r}
+library(tidyverse)
+library(hoopR)
+```
+
+```{r}
+lineups <- nba_teamdashlineups(team_id = 1610612748)[[2]]
+```
+
+```{r}
+lineups <- lineups |> 
+  mutate(across(starts_with("GP"):ncol(lineups), as.numeric))
+```
+
+```{r}
+lineups |>
+  select(GROUP_NAME, GP, MIN, PLUS_MINUS) |>
+  arrange(desc(PLUS_MINUS))
+```
+
+Erik Spoelstra clearly understands what he's doing with the Heat's starting lineup — further proving he's one of the best coaches in the NBA. The lineup with the most minutes and games played together, the starting lineup, has the highest plus-minus out of any of the Heat's lineup by a substantial amount.
