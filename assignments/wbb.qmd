@@ -1,0 +1,97 @@
+```{r}
+library(tidyverse)
+library(ggbeeswarm)
+library(ggrepel)
+library(ggalt)
+set.seed(1234)
+```
+
+```{r}
+set.seed(1234)
+
+simulations <- rbinom(n = 1000, size = 20, prob = .317)
+
+table(simulations)
+```
+```{r}
+players <- read_csv("https://thescoop.org/sports-data-files/wbb_players_2023.csv")
+```
+
+```{r}
+activeplayers <- players |> filter(mp>0, position != "NULL") 
+activeplayers <- activeplayers |> mutate(tspct=pts/(2*(fga+0.44*fta)))
+summary(activeplayers$fga)
+
+shooters <- activeplayers |> filter(fga > 187)
+
+ggplot() + geom_beeswarm(data=shooters, aes(x=position, y=tspct), color="grey")
+```
+
+```{r}
+umd <- activeplayers |> 
+  filter(team == "Maryland") |> 
+  filter(fga>187) |> 
+  arrange(desc(tspct))
+
+ggplot() + 
+  geom_beeswarm(
+    data=shooters, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="grey") + 
+  geom_beeswarm(
+    data=umd, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="red") +
+  geom_text_repel(
+    data=umd, 
+    aes(x=position, y=tspct, label=player))
+```
+
+```{r}
+ggplot() + 
+  geom_quasirandom(
+    data=shooters, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="grey") + 
+  geom_quasirandom(
+    data=umd, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="red") +
+  geom_text_repel(
+    data=umd, 
+    aes(x=position, y=tspct, label=player))
+```
+
+```{r}
+ggplot() + 
+  geom_jitter(
+    data=shooters, 
+    aes(x=position, y=tspct), color="grey") + 
+  geom_jitter(
+    data=umd, 
+    aes(x=position, y=tspct), color="red") +
+  geom_text_repel(
+    data=umd, 
+    aes(x=position, y=tspct, label=player))
+```
+
+```{r}
+players <- read_csv("https://raw.githubusercontent.com/dwillis/hhs-snapshots/main/data/player_totals_20231130.csv") |> filter(mp > 0)
+
+topscorers <- players |> filter(pts > 175)
+
+ggplot() + 
+  geom_point(data=players, aes(x=mp, y=pts), color="grey") + 
+  geom_point(data=topscorers, aes(x=mp, y=pts), color="black") + 
+  geom_encircle(data=topscorers, aes(x=mp, y=pts), s_shape=.5, expand=.03, colour="red") +
+  geom_text(aes(x=275, y=275, label="Top scorers")) + 
+  labs(title="Caitlin Clark Alone At Top", subtitle="The Iowa star is by far the top scorer among all NCAA players", x="Minutes", y="Points") + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()
+    )
+```
+
