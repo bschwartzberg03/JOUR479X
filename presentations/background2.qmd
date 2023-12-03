@@ -1,35 +1,410 @@
 ```{r}
 library (tidyverse)
+library(cowplot)
 ```
 
 My second presentation focuses on the best bang-for-buck Division I college football coaches over the last two seasons.
 
-I used data from Sports Reference College Football to create csv files for each conference in 2022 and 2023. That data includes the teams' wins and losses (both total and conference), their points per game (both offense and defense), their simple rating, their strength of schedule, and their ranks in the AP preseason, AP final, and AP highest polls.
+I used data from Sports Reference College Football to create csv files for each conference in 2022 and 2023. That data includes the teams' wins and losses (both total and conference), their points per game (both offense and defense), their simple rating, their strength of schedule, and their ranks in the AP preseason, AP final, and AP highest polls. Then I renamed the columns to clearly show what they are.
 
 ```{r}
-ACC_2023 <- read_csv("ACC_2023.csv")
-American_2023 <- read_csv("American_2023.csv")
-Big10_2023 <- read_csv("Big 10_2023.csv")
-Big12_2023 <- read_csv("Big 12_2023.csv")
-ConferenceUSA_2023 <- read_csv("Conference USA_2023.csv")
-Independent_2023 <- read_csv("Independent_2023.csv")
-MAC_2023 <- read_csv("MAC_2023.csv")
-Mountain_West_2023 <- read_csv("Mountain West_2023.csv")
-Pac12_2023 <- read_csv("Pac 12_2023.csv")
-SEC_2023 <- read_csv("SEC_2023.csv")
-Sun_Belt_2023 <- read_csv("Sun Belt_2023.csv")
+ACC_2023 <- read_csv("ACC_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'ACC')
+American_2023 <- read_csv("American_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'American')
+Big10_2023 <- read_csv("Big 10_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Big 10')
+Big12_2023 <- read_csv("Big 12_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Big 12')
+ConferenceUSA_2023 <- read_csv("Conference USA_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Conference USA')
+Independent_2023 <- read_csv("Independent_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Independent')
+MAC_2023 <- read_csv("MAC_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'MAC')
+Mountain_West_2023 <- read_csv("Mountain West_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Mountain West')
+Pac12_2023 <- read_csv("Pac 12_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Pac 12')
+SEC_2023 <- read_csv("SEC_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'SEC')
+Sun_Belt_2023 <- read_csv("Sun Belt_2023.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Sun Belt')
 
-ACC_2022 <- read_csv("ACC_2022.csv")
-American_2022 <- read_csv("American_2022.csv")
-Big10_2022 <- read_csv("Big 10_2022.csv")
-Big12_2022 <- read_csv("Big 12_2022.csv")
-ConferenceUSA_2022 <- read_csv("Conference USA_2022.csv")
-Independent_2022 <- read_csv("Independent_2022.csv")
-MAC_2022 <- read_csv("MAC_2022.csv")
-Mountain_West_2022 <- read_csv("Mountain West_2022.csv")
-Pac12_2022 <- read_csv("Pac 12_2022.csv")
-SEC_2022 <- read_csv("SEC_2022.csv")
-Sun_Belt_2022 <- read_csv("Sun Belt_2022.csv")
+ACC_2022 <- read_csv("ACC_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'ACC')
+American_2022 <- read_csv("American_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'American')
+Big10_2022 <- read_csv("Big 10_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Big 10')
+Big12_2022 <- read_csv("Big 12_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Big 12')
+ConferenceUSA_2022 <- read_csv("Conference USA_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Conference USA')
+Independent_2022 <- read_csv("Independent_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Independent')
+MAC_2022 <- read_csv("MAC_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'MAC')
+Mountain_West_2022 <- read_csv("Mountain West_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Mountain West')
+Pac12_2022 <- read_csv("Pac 12_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Pac 12')
+SEC_2022 <- read_csv("SEC_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'SEC')
+Sun_Belt_2022 <- read_csv("Sun Belt_2022.csv") |>
+  rename(
+    School = ...1,
+    Overall_Wins = Overall...2,
+    Overall_Losses = Overall...3,
+    Overall_Percentage = Overall...4,
+    Conference_Wins = Conference...5,
+    Conference_Losses = Conference...6,
+    Conference_Percentage = Conference...7,
+    OFF_PPG = "Points Per Game...8",
+    DEF_PPG = "Points Per Game...9",
+    Simple_Rating_System = SRS...10,
+    Strength_Of_Schedule = SRS...11,
+    AP_Current = Polls...12,
+    AP_Preseason = Polls...13,
+    AP_High = Polls...14,
+    Notes = ...15
+  ) |> mutate(Conference = 'Sun Belt')
 ```
 
 I cleaned up the data by deleting the first row for each of the dataframes since the first row was a subsection without any relevant data.
@@ -68,47 +443,130 @@ College_teams_2023 <- bind_rows(ACC_clean_2023, American_clean_2023, Big_10_clea
 College_teams_2022 <- bind_rows(ACC_clean_2022, American_clean_2022, Big_10_clean_2022, Big_12_clean_2022, Conference_USA_clean_2022, Independent_clean_2022, MAC_clean_2022, Mountain_West_clean_2022, Pac_12_clean_2022, SEC_clean_2022, Sun_Belt_clean_2022)
 ```
 
-I created new dataframes for 2023 and 2022 to include only the teams' wins, losses and win percentage for both their overall games and conference games, since my focus is in terms of coaches' bang-for-buck (wins), and then I renamed the columns to clearly show what they are.
+I created new dataframes for 2023 and 2022 to take out any column besides the teams' wins, losses, win percentage for both their overall games and conference games, and conference, since my focus is in terms of coaches' bang-for-buck (wins).
 
 ```{r}
-College_teams_2023_wins <- College_teams_2023 |>
-  group_by(...1) |>
-  summarise(
-    Overall...2,
-    Overall...3,
-    Overall...4,
-    Conference...5,
-    Conference...6,
-    Conference...7
-  ) |>
-  rename(
-    Overall_Wins = Overall...2,
-    Overall_Losses = Overall...3,
-    Overall_Percentage = Overall...4,
-    Conference_Wins = Conference...5,
-    Conference_Losses = Conference...6,
-    Conference_Percentage = Conference...7
-  ) 
+College_teams_2023_wins = subset(College_teams_2023, select = -c(OFF_PPG, DEF_PPG, Simple_Rating_System, Strength_Of_Schedule, AP_Current, AP_Preseason, AP_High, Notes))
 
-College_teams_2022_wins <- College_teams_2022 |>
-  group_by(...1) |>
-  summarise(
-    Overall...2,
-    Overall...3,
-    Overall...4,
-    Conference...5,
-    Conference...6,
-    Conference...7
-  ) |>
-  rename(
-    Overall_Wins = Overall...2,
-    Overall_Losses = Overall...3,
-    Overall_Percentage = Overall...4,
-    Conference_Wins = Conference...5,
-    Conference_Losses = Conference...6,
-    Conference_Percentage = Conference...7
-  ) 
+College_teams_2022_wins = subset(College_teams_2022, select = -c(OFF_PPG, DEF_PPG, Simple_Rating_System, Strength_Of_Schedule, AP_Current, AP_Preseason, AP_High, Notes))
 ```
 
+I loaded in head coach salary data for both 2022 and 2023, creating dataframes with that data, and then created a new column that showed the total pay without any commas or asterisks or anything beyond the numbers.
 
-The next step for me, is where I could use some assistance, is getting coaching salary data into r. There's clear data that exists for 2022 and 2023 on on3's website, but I don't know how to get that data into r. I'm not sure if I would need to scrape it.
+```{r}
+Salaries_2023 <- read_csv("2023 NCAAF Head Coach Salaries.csv")
+Salaries_2022 <- read_csv("2022 NCAAF Head Coach Salaries.csv")
+
+better2023salaries <- Salaries_2023 |> mutate(Total_Pay = gsub("[^[:alnum:]_ ]", "", `Total Pay`))
+better2022salaries <- Salaries_2022 |> mutate(Total_Pay = gsub("[^[:alnum:]_ ]", "", `Total Pay`))
+```
+
+I created new 2023 and 2022 salary dataframes that included only the coach, the school, the conference and their total pay, filtering to include only coaches with salary data.
+
+```{r}
+best_2023_salaries = subset(better2023salaries, select = -c(`Total Pay`, `School Pay`, `Maximum Bonus`, `Bonuses Paid
+(2022-23)`, `School Buyout
+as of 12/1/2023`)) |>
+  filter(Total_Pay > 0)
+
+best_2022_salaries = subset(better2022salaries, select = -c(`Total Pay`, `School Pay`, `Maximum Bonus`, `Bonuses Paid
+(2021-22)`, `School Buyout
+as of 12/1/2022`)) |>
+  filter(Total_Pay > 0)
+```
+
+I joined the salary and teams dataframes for both 2023 and 2022, into a new dataframe for each year.
+
+```{r}
+teams_2023 <- best_2023_salaries |> left_join(College_teams_2023_wins, join_by ("School"))
+teams_2022 <- best_2022_salaries |> left_join(College_teams_2022_wins, join_by ("School"))
+```
+
+I made the teams dataframes numeric values for the total pay and overall wins columns to make a new column that divdied the total pay by the overall wins.
+
+```{r}
+teams_2023 <- teams_2023 |>
+  mutate(Total_Pay = as.numeric(Total_Pay),
+         Overall_Wins = as.numeric(Overall_Wins)) |>
+mutate(Pay_Per_Win = Total_Pay/Overall_Wins)
+
+teams_2022 <- teams_2022 |>
+  mutate(Total_Pay = as.numeric(Total_Pay),
+         Overall_Wins = as.numeric(Overall_Wins)) |>
+mutate(Pay_Per_Win = Total_Pay/Overall_Wins) 
+```
+
+I created a power five teams dataframe for 2023 and 2022, including only coaches in the power five conferences. I then filtered out to only include the best five bang for buck coaches for both of those years, making a new dataframe for each season.
+
+```{r}
+power_five_teams_2023 <- teams_2023 |> 
+  filter(Conference == "Big 10" | Conference == "SEC" | Conference == "Pac 12" | Conference == "ACC" | Conference == "Big 12")
+power_five_teams_2023_top_5 <- power_five_teams_2023 |> 
+  filter(Pay_Per_Win < 540000)
+
+power_five_teams_2022 <- teams_2022 |> 
+  filter(Conference == "Big 10" | Conference == "SEC" | Conference == "Pac 12" | Conference == "ACC" | Conference == "Big 12")
+power_five_teams_2022_top_5 <- power_five_teams_2022 |> 
+  filter(Pay_Per_Win < 400000)
+```
+
+I made a new dataframe for 2022 and 2023, filtering to only include the best five bang for buck coaches for both of those years.
+
+```{r}
+top_5_teams_2023 <- teams_2023 |>
+  filter(Pay_Per_Win < 111111)
+
+top_5_teams_2022 <- teams_2022 |>
+  filter(Pay_Per_Win < 77626)
+```
+
+I created bar charts to display the best five bang for buck coaches for 2023 among all teams and power five teams, and made Chuck Martin and Kalen Deboer dataframes to clearly show them on the bar charts.
+
+```{r}
+cm <- top_5_teams_2023 |> filter(Coach == "Chuck Martin")
+kd <- power_five_teams_2023_top_5 |> filter(Coach == "Kalen DeBoer")
+
+bar1 <- ggplot() + 
+  geom_bar(data=top_5_teams_2023, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) +   
+  geom_bar(data=cm, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#B61E2E") +
+  coord_flip() + 
+  labs(title="Miami (OH) gets the most out of Chuck Martin", subtitle = "Miami (OH) spends the fewest dollars per win out of its coach in all of the FBS.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + 
+  theme_minimal()
+
+bar2 <- ggplot() + 
+  geom_bar(data=power_five_teams_2023_top_5, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) +   
+  geom_bar(data=kd, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#4B2E83") +
+  coord_flip() + 
+  labs(title="Washington gets the most out of Kalen DeBoer", subtitle = "Washington spends the fewest dollars per win out of its coach among Power 5 teams.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + 
+  theme_minimal()
+
+plot_grid(bar1, bar2, ncol=1) 
+```
+
+I created bar charts to display the best five bang for buck coaches for 2022 among all teams and power five teams, and made Tim Albin and Kalen Deboer dataframes to clearly show them on the bar charts.
+
+```{r}
+ta <- top_5_teams_2022 |> filter(Coach == "Tim Albin")
+kd2 <- power_five_teams_2022_top_5 |> filter(Coach == "Kalen DeBoer")
+
+bar3 <- ggplot() + 
+  geom_bar(data=top_5_teams_2022, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) + 
+  geom_bar(data=ta, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#00694E") +
+  coord_flip() + 
+  labs(title="Ohio got the most out of Tim Albin", subtitle = "Ohio spent the fewest dollars per win out of its coach in all of the FBS in 2022.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + 
+  theme_minimal()
+
+bar4 <- ggplot() + 
+  geom_bar(data=power_five_teams_2022_top_5, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) +
+  geom_bar(data=kd2, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#4B2E83") +
+  coord_flip() + 
+  labs(title="Washington got the most out of Kalen DeBoer", subtitle = "Washington spent the fewest dollars per win out of its coach among Power 5 teams in 2022.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + theme_minimal()
+
+plot_grid(bar3, bar4, ncol=1) 
+```
+
+The focus of my second presentation was to determine the best bang-for-buck Division I college football coaches over the last two seasons. I've reached that point, kind of.
+
+I've figured out the best bang-for-buck Division I college football coaches among both all coaches and power five coaches for each of the past two seasons, and displayed that via bar charts — I was debating that or lollipop charts, but felt bar charts were better since I could display one on top of another.
+
+What's next for me is to change the scale on the axis to include the number, not scientific notation (was wondering if you knew the best way to go about doing that). I also need to combine the dataframes into one total dataframe, combining the wins and pay from each of the past two seasons. I'm assuming I would just need to do the same thing I did when I joined the salary and teams dataframes for both 2023 and 2022, into a new dataframe for each year? I would think I would need to mutate a new column to combine the wins and pay for each season?
