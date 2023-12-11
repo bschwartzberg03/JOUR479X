@@ -1,6 +1,7 @@
 ```{r}
 library (tidyverse)
 library(cowplot)
+options(scipen=999)
 ```
 
 My second presentation focuses on the best bang-for-buck Division I college football coaches over the last two seasons.
@@ -457,8 +458,8 @@ I loaded in head coach salary data for both 2022 and 2023, creating dataframes w
 Salaries_2023 <- read_csv("2023 NCAAF Head Coach Salaries.csv")
 Salaries_2022 <- read_csv("2022 NCAAF Head Coach Salaries.csv")
 
-better2023salaries <- Salaries_2023 |> mutate(Total_Pay = gsub("[^[:alnum:]_ ]", "", `Total Pay`))
-better2022salaries <- Salaries_2022 |> mutate(Total_Pay = gsub("[^[:alnum:]_ ]", "", `Total Pay`))
+better2023salaries <- Salaries_2023 |> mutate(Overall_Pay = gsub("[^[:alnum:]_ ]", "", `Total Pay`))
+better2022salaries <- Salaries_2022 |> mutate(Overall_Pay = gsub("[^[:alnum:]_ ]", "", `Total Pay`))
 ```
 
 I created new 2023 and 2022 salary dataframes that included only the coach, the school, the conference and their total pay, filtering to include only coaches with salary data.
@@ -467,12 +468,12 @@ I created new 2023 and 2022 salary dataframes that included only the coach, the 
 best_2023_salaries = subset(better2023salaries, select = -c(`Total Pay`, `School Pay`, `Maximum Bonus`, `Bonuses Paid
 (2022-23)`, `School Buyout
 as of 12/1/2023`)) |>
-  filter(Total_Pay > 0)
+  filter(Overall_Pay > 0)
 
 best_2022_salaries = subset(better2022salaries, select = -c(`Total Pay`, `School Pay`, `Maximum Bonus`, `Bonuses Paid
 (2021-22)`, `School Buyout
 as of 12/1/2022`)) |>
-  filter(Total_Pay > 0)
+  filter(Overall_Pay > 0)
 ```
 
 I joined the salary and teams dataframes for both 2023 and 2022, into a new dataframe for each year.
@@ -482,21 +483,21 @@ teams_2023 <- best_2023_salaries |> left_join(College_teams_2023_wins, join_by (
 teams_2022 <- best_2022_salaries |> left_join(College_teams_2022_wins, join_by ("School"))
 ```
 
-I made the teams dataframes numeric values for the total pay and overall wins columns to make a new column that divdied the total pay by the overall wins.
+I made the teams dataframes numeric values for the total pay and overall wins columns to make a new column that divided the total pay by the overall wins.
 
 ```{r}
 teams_2023 <- teams_2023 |>
-  mutate(Total_Pay = as.numeric(Total_Pay),
+  mutate(Total_Pay = as.numeric(Overall_Pay),
          Overall_Wins = as.numeric(Overall_Wins)) |>
 mutate(Pay_Per_Win = Total_Pay/Overall_Wins)
 
 teams_2022 <- teams_2022 |>
-  mutate(Total_Pay = as.numeric(Total_Pay),
+  mutate(Total_Pay = as.numeric(Overall_Pay),
          Overall_Wins = as.numeric(Overall_Wins)) |>
 mutate(Pay_Per_Win = Total_Pay/Overall_Wins) 
 ```
 
-I created a power five teams dataframe for 2023 and 2022, including only coaches in the power five conferences. I then filtered out to only include the best five bang for buck coaches for both of those years, making a new dataframe for each season.
+I created a power five teams dataframe for 2023 and 2022, including only coaches in the power five conferences. I then filtered out to only include the best five power five bang for buck coaches for both of those years, making a new dataframe for each season.
 
 ```{r}
 power_five_teams_2023 <- teams_2023 |> 
@@ -510,7 +511,7 @@ power_five_teams_2022_top_5 <- power_five_teams_2022 |>
   filter(Pay_Per_Win < 400000)
 ```
 
-I made a new dataframe for 2022 and 2023, filtering to only include the best five bang for buck coaches for both of those years.
+I made a new dataframe for 2022 and 2023, filtering to only include the best five overall bang for buck coaches for both of those years.
 
 ```{r}
 top_5_teams_2023 <- teams_2023 |>
@@ -554,19 +555,187 @@ bar3 <- ggplot() +
   geom_bar(data=ta, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#00694E") +
   coord_flip() + 
   labs(title="Ohio got the most out of Tim Albin", subtitle = "Ohio spent the fewest dollars per win out of its coach in all of the FBS in 2022.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + 
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 15, face = "bold"),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size= 10), 
+    plot.caption = element_text(size = 10),
+    panel.grid.minor = element_blank()
+    )
 
 bar4 <- ggplot() + 
   geom_bar(data=power_five_teams_2022_top_5, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) +
   geom_bar(data=kd2, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#4B2E83") +
   coord_flip() + 
-  labs(title="Washington got the most out of Kalen DeBoer", subtitle = "Washington spent the fewest dollars per win out of its coach among Power 5 teams in 2022.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + theme_minimal()
+  labs(title="Washington got the most out of Kalen DeBoer", subtitle = "Washington spent the fewest dollars per win out of its coach among Power 5 teams in 2022.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + theme_minimal() +
+  theme(
+    plot.title = element_text(size = 15, face = "bold"),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size= 10), 
+    plot.caption = element_text(size = 10),
+    panel.grid.minor = element_blank()
+    )
 
 plot_grid(bar3, bar4, ncol=1) 
 ```
 
-The focus of my second presentation was to determine the best bang-for-buck Division I college football coaches over the last two seasons. I've reached that point, kind of.
+I mutated my teams dataframes to create new columns that showed year of the year, the pay, the wins, the pay per win and the conference columns.
 
-I've figured out the best bang-for-buck Division I college football coaches among both all coaches and power five coaches for each of the past two seasons, and displayed that via bar charts — I was debating that or lollipop charts, but felt bar charts were better since I could display one on top of another.
+```{r}
+teams_2023 <- teams_2023 |> 
+  mutate(Year = '2023', Pay_2023 = Overall_Pay, Wins_2023 = Overall_Wins, Pay_Per_Win_2023 = Pay_Per_Win, Conference_2023 = Conference)
 
-What's next for me is to change the scale on the axis to include the number, not scientific notation (was wondering if you knew the best way to go about doing that). I also need to combine the dataframes into one total dataframe, combining the wins and pay from each of the past two seasons. I'm assuming I would just need to do the same thing I did when I joined the salary and teams dataframes for both 2023 and 2022, into a new dataframe for each year? I would think I would need to mutate a new column to combine the wins and pay for each season?
+teams_2022 <- teams_2022 |> 
+  mutate(Year = '2022', Pay_2022 = Overall_Pay, Wins_2022 = Overall_Wins, Pay_Per_Win_2022 = Pay_Per_Win, Conference_2022 = Conference)
+```
+
+I combined the two teams dataframes into one.
+
+```{r}
+combined_teams <- bind_rows(teams_2023, teams_2022)
+```
+
+I made the overall pay column a numeric value in the combined teams dataframe. I then made a new combined teams dataframe, grouping by the coach, the school and the conference, to include only the total pay, the total wins and the total pay per win.
+
+
+```{r}
+combined_teams$Overall_Pay = as.numeric(as.character(combined_teams$Overall_Pay)) 
+
+combined_teams2 <- combined_teams |>
+  group_by(Coach, School, Conference) |>
+  summarise(Total_Pay = sum(Overall_Pay), Total_Wins = sum(Overall_Wins), Total_Pay_Per_Win = sum(Pay_Per_Win))
+```
+
+I created a power five dataframe from the newest combined teams one, and created a power five pay per win dataframe from that by grouping by the coaches and including only their combined pay and combine wins, and then creating a new column to show their overall pay per win. Then in order to get a top five power coaches for each of the past two tears in terms of pay per win, I needed to create a top seven for the power five coaches — since two of them only coached in the power five for one season — and then trim it down to five by excluding those coaches that didn't have 10 wins since they only coached in the power five for one season.
+
+I created an overall coaches pay per win dataframe from the newest combined teams one, grouping by the coaches and including only their combined pay and combine wins, and then creating a new column to show their overall pay per win. Then in order to get the top five overall coaches for each of the past two years in terms of pay per win, I needed to create a top six for the coaches — since one of them only coached for one season — and then trim it down to five by excluding those coaches that didn't have 10 wins since they only coached for one season.
+
+```{r}
+P5_combined_teams2 <- combined_teams2 |> 
+  filter(Conference == "Big 10" | Conference == "SEC" | Conference == "Pac 12" | Conference == "ACC" | Conference == "Big 12")
+
+P5_coaches_PPW <- P5_combined_teams2 |> 
+  group_by(Coach) |>
+  summarise(Combined_Pay = sum(Total_Pay), Combined_Wins = sum(Total_Wins))
+P5_coaches_PPW <- P5_coaches_PPW |>
+  mutate(Pay_Per_Win = Combined_Pay/Combined_Wins)
+
+P5_coaches_PPW_top7 <- P5_coaches_PPW |> 
+  filter(Pay_Per_Win < 527497)
+
+P5_coaches_PPW_top5 <- P5_coaches_PPW_top7 |> 
+  filter(Combined_Wins > 10)
+
+coaches_PPW <- combined_teams2 |>
+  group_by(Coach) |>
+  summarise(Combined_Pay = sum(Total_Pay), Combined_Wins = sum(Total_Wins))
+coaches_PPW <- coaches_PPW |>
+  mutate(Pay_Per_Win = Combined_Pay/Combined_Wins)
+
+coaches_PPW_top6 <- coaches_PPW |> 
+  filter(Pay_Per_Win < 86904)
+
+coaches_PPW_top5 <- coaches_PPW_top6 |> 
+  filter(Combined_Wins > 10)
+```
+
+I created bar charts to display the best five bang for buck coaches among all teams and power five teams, and made Tim Albin and Kalen Deboer dataframes to clearly show them on the bar charts.
+
+```{r}
+ta2 <- coaches_PPW_top5 |> filter(Coach == "Tim Albin")
+kd3 <- P5_coaches_PPW_top5 |> filter(Coach == "Kalen DeBoer")
+
+bar5 <- ggplot() + 
+  geom_bar(data=coaches_PPW_top5, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) + 
+  geom_bar(data=ta2, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#00694E") +
+  coord_flip() + 
+  labs(title="Tim Albin: Best Money Spent", subtitle = "Ohio is the best bang-for-buck program among FBS schools with the same coach over the past two years.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 15, face = "bold"),
+    axis.title = element_text(size = 7.8), 
+    plot.subtitle = element_text(size= 7.8), 
+    plot.caption = element_text(size = 7.8),
+    panel.grid.minor = element_blank()
+    )
+
+bar6 <- ggplot() + 
+  geom_bar(data=P5_coaches_PPW_top5, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win)) +
+  geom_bar(data=kd3, aes(x=reorder(Coach, -Pay_Per_Win), weight=Pay_Per_Win), fill="#4B2E83") +
+  coord_flip() + 
+  labs(title="Kalen DeBoer: Great Money Spent", subtitle = "Washington is the best bang-for-buck program among schools in the Power 5 with the same coach over the past two years.",  x="Coach", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + theme_minimal() +
+  theme(
+    plot.title = element_text(size = 15, face = "bold"),
+    axis.title = element_text(size = 7.8), 
+    plot.subtitle = element_text(size= 7.8), 
+    plot.caption = element_text(size = 7.8),
+    panel.grid.minor = element_blank()
+    )
+
+plot_grid(bar5, bar6, ncol=1)
+```
+
+I created a fired coaches dataframe from the combined teams one that included all of the fired coaches in 2022 and 2023. I then created a current coaches dataframe to include anyone who wasn't fired, and created a new column in each of the new dataframes to display their job status.
+
+```{r}
+fired_coaches <- combined_teams2 |>
+  filter(Coach == "Scott Frost" | Coach == "Herm Edwards" | Coach == "Geoff Collins" | Coach == "Karl Dorrell" | Coach == "Paul Chryst" | Coach == "Will Healy" | Coach == "Bryan Harsin" | Coach == "Jeff Scott" | Coach == "Willie Taggart" | Coach == "Philip Montgomery" | Coach == "Jake Spavital" | Coach == "Tim Lester" | Coach == "Marcus Arroyo" | Coach == "Seth Littrell" | Coach == "Ken Niumatalolo" | Coach == "Jimbo Fisher" | Coach == "Zach Arnett" | Coach == "Andy Avalos" | Coach == "Dino Babers" | Coach == "Dana Holgorsen" | Coach == "Rick Stockstill" | Coach == "Dana Dimel" | Coach == "Terry Bowden" | Coach == "Danny Gonzales") |>
+  mutate(Status = 'Fired')
+
+coaches_to_exclude <- c(
+  "Scott Frost", "Herm Edwards", "Geoff Collins", "Karl Dorrell", "Paul Chryst",
+  "Will Healy", "Bryan Harsin", "Jeff Scott", "Willie Taggart", "Philip Montgomery",
+  "Jake Spavital", "Tim Lester", "Marcus Arroyo", "Seth Littrell", "Ken Niumatalolo",
+  "Jimbo Fisher", "Zach Arnett", "Andy Avalos", "Dino Babers", "Dana Holgorsen",
+  "Rick Stockstill", "Dana Dimel", "Terry Bowden", "Danny Gonzales"
+)
+
+current_coaches <- combined_teams2 |> filter(!(Coach %in% coaches_to_exclude)) |>
+  mutate(Status = 'Current')
+```
+
+I combined the two coaches dataframes into one.
+
+```{r}
+coaches <- bind_rows(fired_coaches, current_coaches)
+```
+
+I created a new coaches dataframe, grouping by their status, to include the combined pay and combined wins for overall fired and current coaches. I then created a new column to show the pay per win amount.
+
+```{r}
+coaches2 <- coaches |>
+  group_by(Status) |>
+  summarise(Combined_Pay = sum(Total_Pay), Combined_Wins = sum(Total_Wins)) |>
+  mutate(PPW = Combined_Pay/Combined_Wins)
+```
+
+I created a bar chart to show the slight difference in average cost between fired and current coaches.
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=coaches2, 
+    aes(
+      x=reorder(Status, PPW), 
+      weight=PPW
+      )
+    ) +
+  coord_flip() + 
+  labs(title="No Clear Pay Per Win Line", subtitle = "Head coaches that have been fired over the past two years cost only slightly more per their wins than those currently with jobs.",  x="Status", y="Average Amount ($) Per Win", caption = "Source: USA Today & CFB Reference | By Brandon Schwartzberg") + theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size= 8), 
+    plot.caption = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+```
+# Results
+
+While the ultimate goal for a college is to have its coaches win a national championship, the best athletic directors are the ones that can spend the fewest to achieve that goal. That's where the term bang-for-buck comes in — the amount of dollars a coach receives per win. For athletic directors, the goal is to have that number as low as possible — which is where Ohio University shines.
+
+Tim Albin, Ohio's head coach, is the best bang-for-buck Division I FBS football coach over the past two seasons. Albin's 66,544.44 dollars spent per win is the fewest among all coaches, a value calculated through taking CFB Reference's wins stats and USA Today's college football coaching salary data. Jerry Kill of New Mexico State is the next closest to Albin, still averaging over 5,000 more dollars spent per win.
+
+When it comes to Power Five schools, Washington's Kalen DeBoer has easily been the best coach in terms of bang-for-buck. Among coaches to coach in either the ACC, Big 10, Big 12, Pac 12 or SEC for each of the past two seasons, DeBoer has reigned supreme as not just one of the best coaches overall — he turned Washington from a four-win team in 2021 to double-digit wins last season and a trip to the College Football Playoffs this season — but the best bang-for-buck coach. DeBoer's closest competition, Jake Dickert of Washington State, is over 118,000 dollars apart.
+
+But perhaps the most interesting note is the pay-per-win discrepancy between fired coaches and non-fired coaches. A surprise to me, fired coaches have cost only $4,589.90 more than the non-fired coaches — a very slim mark taking into account the overall cost of college football coaches. Even with high profile and highly paid names like Jimbo Fisher and Mel Tucker having recently been fired, the average pay-per-win of a fired coach is still only slightly more than a non-fired coach.
